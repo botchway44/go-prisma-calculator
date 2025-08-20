@@ -118,7 +118,7 @@ This method builds the application into a container and runs both the app and th
 
 1.  **Clone the Repository with Submodules**
     ```bash
-    git clone --recurse-submodules <your-repo-url>
+    git clone --recurse-submodules https://github.com/botchway44/go-prisma-calculator.git
     cd go-prisma-calculator
     ```
 2.  **Set Up Environment Variables**
