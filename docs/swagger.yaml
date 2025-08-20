@@ -1,0 +1,69 @@
+basePath: /
+definitions:
+  rest.calcRequest:
+    properties:
+      a:
+        type: integer
+      b:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A simple API for a calculator service with a database.
+  title: Calculator Service API
+  version: "1.0"
+paths:
+  /add:
+    post:
+      consumes:
+      - application/json
+      description: Takes two integers and returns their sum, storing the result.
+      parameters:
+      - description: The two numbers to add
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rest.calcRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add two numbers
+  /divide:
+    post:
+      consumes:
+      - application/json
+      description: Takes two integers and returns their quotient, storing the result.
+      parameters:
+      - description: The two numbers to divide
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rest.calcRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Divide two numbers
+swagger: "2.0"

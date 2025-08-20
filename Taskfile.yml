@@ -1,0 +1,95 @@
+version: '3'
+
+# Variables used across tasks
+vars:
+  APP_NAME: go-prisma-calculator
+  GO_MAIN: ./cmd/server/main.go
+  GENERATED_DIR: ./generated
+  GOOGLEAPIS_DIR: googleapis
+
+tasks:
+  # ------------------------------------------------------------------
+  # Main Development Tasks
+  # ------------------------------------------------------------------
+
+  default:
+    desc: 'Lists all available tasks.'
+    cmds:
+      - task --list-all
+
+  dev:
+    desc: 'Runs the server with live-reloading using Air.'
+    cmds:
+      - air
+
+  run:
+    desc: 'Runs the main application without live-reloading.'
+    cmds:
+      - go run {{.GO_MAIN}}
+
+  # ------------------------------------------------------------------
+  # Code Generation Tasks
+  # ------------------------------------------------------------------
+
+  gen:
+    desc: 'Generates all code (Prisma client and Protobuf stubs).'
+    cmds:
+      - task: gen:prisma
+      - task: gen:proto
+
+  gen:prisma:
+    desc: 'Generates the Prisma Go client.'
+    cmds:
+      - echo "==> Generating Prisma Go client..."
+      - go run github.com/steebchen/prisma-client-go generate
+
+  gen:proto:
+    desc: 'Generates Protobuf and gRPC code.'
+    cmds:
+      - echo "==> Generating protobuf files from {{.GOOGLEAPIS_DIR}}"
+      - |
+        protoc \
+          -I proto \
+          -I "{{.GOOGLEAPIS_DIR}}" \
+          --go_out=. \
+          --go_opt=module={{.APP_NAME}} \
+          --go-grpc_out=. \
+          --go-grpc_opt=module={{.APP_NAME}} \
+          --openapiv2_out=./docs \
+          proto/*.proto
+
+  # ------------------------------------------------------------------
+  # Database Tasks
+  # ------------------------------------------------------------------
+
+  db:push:
+    desc: 'Pushes the Prisma schema to the database.'
+    cmds:
+      - go run github.com/steebchen/prisma-client-go db push
+
+  db:up:
+    desc: 'Starts the PostgreSQL database using Docker Compose.'
+    cmds:
+      - docker-compose up -d
+
+  db:down:
+    desc: 'Stops the PostgreSQL database.'
+    cmds:
+      - docker-compose down
+
+  # ------------------------------------------------------------------
+  # Utility Tasks
+  # ------------------------------------------------------------------
+
+  tidy:
+    desc: 'Tidies and vendors Go modules.'
+    cmds:
+      - go mod tidy
+      - go mod vendor
+
+  clean:
+    desc: 'Removes generated files and temporary build artifacts.'
+    cmds:
+      - rm -rf {{.GENERATED_DIR}}
+      - rm -rf ./tmp
+      - rm -rf ./docs

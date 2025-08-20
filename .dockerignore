@@ -1,0 +1,17 @@
+# Git files
+.git
+.gitignore
+.gitmodules
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# Go module cache
+vendor
+
+# Temporary files
+tmp
+
+# Local environment file (if you have local-only overrides)
+.env.local
