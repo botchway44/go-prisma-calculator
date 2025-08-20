@@ -1,6 +1,9 @@
 package providers
 
 import (
+	"context"
+	"log/slog"
+
 	"go-prisma-calculator/internal/application/usecase"
 	"go-prisma-calculator/internal/domain/ports/in"
 	"go-prisma-calculator/internal/domain/ports/out"
@@ -8,6 +11,7 @@ import (
 	grpc_adapter "go-prisma-calculator/internal/infrastructure/adapter/grpc"
 	rest_adapter "go-prisma-calculator/internal/infrastructure/adapter/rest"
 	"go-prisma-calculator/internal/infrastructure/config"
+	"go-prisma-calculator/internal/infrastructure/logger"
 	"go-prisma-calculator/internal/infrastructure/repository"
 	db "go-prisma-calculator/internal/infrastructure/repository/prisma"
 
@@ -16,10 +20,23 @@ import (
 
 // Module bundles all of our application's components for fx.
 var Module = fx.Options(
-	// 1. Provide the application configuration.
+	// 1. Provide the Logger, managing the file lifecycle with fx.
+	fx.Provide(func(lifecycle fx.Lifecycle) *slog.Logger {
+		l, f := logger.NewLogger()
+		if f != nil {
+			lifecycle.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return f.Close()
+				},
+			})
+		}
+		return l
+	}),
+
+	// 2. Provide the application configuration.
 	fx.Provide(config.NewConfig),
 
-	// 2. Provide the Prisma database client. It depends on Config.
+	// 3. Provide the Prisma database client, which depends on Config.
 	fx.Provide(func(c *config.Config) *db.PrismaClient {
 		// In a real app, you would use c.DatabaseURL
 		client := db.NewClient()
@@ -29,7 +46,7 @@ var Module = fx.Options(
 		return client
 	}),
 
-	// 3. Provide the Repository, mapping the implementation to the port.
+	// 4. Provide the Repository, mapping the implementation to the outbound port.
 	fx.Provide(
 		fx.Annotate(
 			repository.NewPrismaRepository,
@@ -37,10 +54,10 @@ var Module = fx.Options(
 		),
 	),
 
-	// 4. Provide the Domain Service, which depends on the repository port.
+	// 5. Provide the Domain Service, which depends on the repository port.
 	fx.Provide(service.NewCalculatorService),
 
-	// 5. Provide the Application Usecase, mapping the implementation to the port.
+	// 6. Provide the Application Usecase, mapping the implementation to the inbound port.
 	fx.Provide(
 		fx.Annotate(
 			usecase.NewCalculatorUseCase,
@@ -48,7 +65,7 @@ var Module = fx.Options(
 		),
 	),
 
-	// 6. Provide the API adapters, which depend on the usecase port.
+	// 7. Provide the API adapters, which depend on the usecase port and the logger.
 	fx.Provide(grpc_adapter.NewAdapter),
 	fx.Provide(rest_adapter.NewAdapter),
 )

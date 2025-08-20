@@ -7,12 +7,14 @@ import (
 	"go-prisma-calculator/internal/domain/service"
 )
 
-// CalculatorUseCase implements the inbound port.
+// CalculatorUseCase implements the inbound port (in.CalculatorPort).
 type CalculatorUseCase struct {
+	// It depends on the pure domain service for the actual business logic.
 	calcService *service.CalculatorService
 }
 
-// NewCalculatorUseCase creates the use case and depends on the domain service.
+// NewCalculatorUseCase is the constructor that fx uses to create an instance.
+// It receives the domain service as a dependency.
 func NewCalculatorUseCase(calcService *service.CalculatorService) in.CalculatorPort {
 	return &CalculatorUseCase{calcService: calcService}
 }

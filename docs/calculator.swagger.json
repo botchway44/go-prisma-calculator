@@ -19,6 +19,7 @@
   "paths": {
     "/v1/add": {
       "post": {
+        "summary": "Add performs addition and maps to a RESTful POST endpoint.",
         "operationId": "CalculatorService_Add",
         "responses": {
           "200": {
@@ -37,6 +38,7 @@
         "parameters": [
           {
             "name": "body",
+            "description": "AddRequest defines the structure for an addition RPC call.",
             "in": "body",
             "required": true,
             "schema": {
@@ -51,6 +53,7 @@
     },
     "/v1/divide": {
       "post": {
+        "summary": "Divide performs division and maps to a RESTful POST endpoint.",
         "operationId": "CalculatorService_Divide",
         "responses": {
           "200": {
@@ -69,6 +72,7 @@
         "parameters": [
           {
             "name": "body",
+            "description": "DivideRequest defines the structure for a division RPC call.",
             "in": "body",
             "required": true,
             "schema": {
@@ -94,7 +98,8 @@
           "type": "integer",
           "format": "int32"
         }
-      }
+      },
+      "description": "AddRequest defines the structure for an addition RPC call."
     },
     "protoCalculationResponse": {
       "type": "object",
@@ -104,7 +109,7 @@
           "format": "int32"
         }
       },
-      "description": "Renamed from AddResponse to be more generic."
+      "description": "CalculationResponse is the generic response for all calculation RPCs."
     },
     "protoDivideRequest": {
       "type": "object",
@@ -117,7 +122,8 @@
           "type": "integer",
           "format": "int32"
         }
-      }
+      },
+      "description": "DivideRequest defines the structure for a division RPC call."
     },
     "protobufAny": {
       "type": "object",

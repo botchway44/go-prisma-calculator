@@ -4,9 +4,12 @@
 // 	protoc        v6.32.0
 // source: calculator.proto
 
+// The package name should match the Go package for consistency.
+
 package proto
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -21,6 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AddRequest defines the structure for an addition RPC call.
 type AddRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	A             int32                  `protobuf:"varint,1,opt,name=a,proto3" json:"a,omitempty"`
@@ -73,50 +77,7 @@ func (x *AddRequest) GetB() int32 {
 	return 0
 }
 
-type AddResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Result        int32                  `protobuf:"varint,1,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AddResponse) Reset() {
-	*x = AddResponse{}
-	mi := &file_calculator_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AddResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AddResponse) ProtoMessage() {}
-
-func (x *AddResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_calculator_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AddResponse.ProtoReflect.Descriptor instead.
-func (*AddResponse) Descriptor() ([]byte, []int) {
-	return file_calculator_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *AddResponse) GetResult() int32 {
-	if x != nil {
-		return x.Result
-	}
-	return 0
-}
-
+// DivideRequest defines the structure for a division RPC call.
 type DivideRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Dividend      int32                  `protobuf:"varint,1,opt,name=dividend,proto3" json:"dividend,omitempty"`
@@ -127,7 +88,7 @@ type DivideRequest struct {
 
 func (x *DivideRequest) Reset() {
 	*x = DivideRequest{}
-	mi := &file_calculator_proto_msgTypes[2]
+	mi := &file_calculator_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -139,7 +100,7 @@ func (x *DivideRequest) String() string {
 func (*DivideRequest) ProtoMessage() {}
 
 func (x *DivideRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_calculator_proto_msgTypes[2]
+	mi := &file_calculator_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -152,7 +113,7 @@ func (x *DivideRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DivideRequest.ProtoReflect.Descriptor instead.
 func (*DivideRequest) Descriptor() ([]byte, []int) {
-	return file_calculator_proto_rawDescGZIP(), []int{2}
+	return file_calculator_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DivideRequest) GetDividend() int32 {
@@ -169,23 +130,69 @@ func (x *DivideRequest) GetDivisor() int32 {
 	return 0
 }
 
+// CalculationResponse is the generic response for all calculation RPCs.
+type CalculationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Result        int32                  `protobuf:"varint,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CalculationResponse) Reset() {
+	*x = CalculationResponse{}
+	mi := &file_calculator_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CalculationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CalculationResponse) ProtoMessage() {}
+
+func (x *CalculationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_calculator_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CalculationResponse.ProtoReflect.Descriptor instead.
+func (*CalculationResponse) Descriptor() ([]byte, []int) {
+	return file_calculator_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CalculationResponse) GetResult() int32 {
+	if x != nil {
+		return x.Result
+	}
+	return 0
+}
+
 var File_calculator_proto protoreflect.FileDescriptor
 
 const file_calculator_proto_rawDesc = "" +
 	"\n" +
-	"\x10calculator.proto\x12\n" +
-	"calculator\"(\n" +
+	"\x10calculator.proto\x12\x05proto\x1a\x1cgoogle/api/annotations.proto\"(\n" +
 	"\n" +
 	"AddRequest\x12\f\n" +
 	"\x01a\x18\x01 \x01(\x05R\x01a\x12\f\n" +
-	"\x01b\x18\x02 \x01(\x05R\x01b\"%\n" +
-	"\vAddResponse\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\x05R\x06result\"E\n" +
+	"\x01b\x18\x02 \x01(\x05R\x01b\"E\n" +
 	"\rDivideRequest\x12\x1a\n" +
 	"\bdividend\x18\x01 \x01(\x05R\bdividend\x12\x18\n" +
-	"\adivisor\x18\x02 \x01(\x05R\adivisor2K\n" +
-	"\x11CalculatorService\x126\n" +
-	"\x03Add\x12\x16.calculator.AddRequest\x1a\x17.calculator.AddResponseB&Z$go-prisma-calculator/generated/protob\x06proto3"
+	"\adivisor\x18\x02 \x01(\x05R\adivisor\"-\n" +
+	"\x13CalculationResponse\x12\x16\n" +
+	"\x06result\x18\x01 \x01(\x05R\x06result2\xb0\x01\n" +
+	"\x11CalculatorService\x12H\n" +
+	"\x03Add\x12\x11.proto.AddRequest\x1a\x1a.proto.CalculationResponse\"\x12\x82\xd3\xe4\x93\x02\f:\x01*\"\a/v1/add\x12Q\n" +
+	"\x06Divide\x12\x14.proto.DivideRequest\x1a\x1a.proto.CalculationResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
+	"/v1/divideB&Z$go-prisma-calculator/generated/protob\x06proto3"
 
 var (
 	file_calculator_proto_rawDescOnce sync.Once
@@ -201,15 +208,17 @@ func file_calculator_proto_rawDescGZIP() []byte {
 
 var file_calculator_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_calculator_proto_goTypes = []any{
-	(*AddRequest)(nil),    // 0: calculator.AddRequest
-	(*AddResponse)(nil),   // 1: calculator.AddResponse
-	(*DivideRequest)(nil), // 2: calculator.DivideRequest
+	(*AddRequest)(nil),          // 0: proto.AddRequest
+	(*DivideRequest)(nil),       // 1: proto.DivideRequest
+	(*CalculationResponse)(nil), // 2: proto.CalculationResponse
 }
 var file_calculator_proto_depIdxs = []int32{
-	0, // 0: calculator.CalculatorService.Add:input_type -> calculator.AddRequest
-	1, // 1: calculator.CalculatorService.Add:output_type -> calculator.AddResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: proto.CalculatorService.Add:input_type -> proto.AddRequest
+	1, // 1: proto.CalculatorService.Divide:input_type -> proto.DivideRequest
+	2, // 2: proto.CalculatorService.Add:output_type -> proto.CalculationResponse
+	2, // 3: proto.CalculatorService.Divide:output_type -> proto.CalculationResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

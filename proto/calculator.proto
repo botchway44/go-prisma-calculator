@@ -1,24 +1,48 @@
 syntax = "proto3";
 
-package calculator;
+package proto;
 
+// Import the Google APIs for annotations, needed for Swagger generation.
+import "google/api/annotations.proto";
+
+// This option defines the full Go import path for the generated code.
 option go_package = "go-prisma-calculator/generated/proto";
 
-
-message AddRequest{
+// --- Messages ---
+// AddRequest defines the structure for an addition RPC call.
+message AddRequest {
   int32 a = 1;
   int32 b = 2;
 }
 
-message AddResponse{
+// DivideRequest defines the structure for a division RPC call.
+message DivideRequest {
+  int32 dividend = 1;
+  int32 divisor = 2;
+}
+
+// CalculationResponse is the generic response for all calculation RPCs.
+message CalculationResponse {
   int32 result = 1;
 }
 
-service CalculatorService{
-  rpc Add(AddRequest) returns (AddResponse);
-}
 
-message DivideRequest{
-  int32 dividend = 1;
-  int32 divisor = 2;
+// --- Service ---
+
+service CalculatorService {
+  // Add performs addition and maps to a RESTful POST endpoint.
+  rpc Add(AddRequest) returns (CalculationResponse) {
+    option (google.api.http) = {
+      post: "/v1/add"
+      body: "*"
+    };
+  }
+
+  // Divide performs division and maps to a RESTful POST endpoint.
+  rpc Divide(DivideRequest) returns (CalculationResponse) {
+    option (google.api.http) = {
+      post: "/v1/divide"
+      body: "*"
+    };
+  }
 }

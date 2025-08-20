@@ -4,6 +4,8 @@
 // - protoc             v6.32.0
 // source: calculator.proto
 
+// The package name should match the Go package for consistency.
+
 package proto
 
 import (
@@ -19,14 +21,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CalculatorService_Add_FullMethodName = "/calculator.CalculatorService/Add"
+	CalculatorService_Add_FullMethodName    = "/proto.CalculatorService/Add"
+	CalculatorService_Divide_FullMethodName = "/proto.CalculatorService/Divide"
 )
 
 // CalculatorServiceClient is the client API for CalculatorService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CalculatorServiceClient interface {
-	Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error)
+	// Add performs addition and maps to a RESTful POST endpoint.
+	Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*CalculationResponse, error)
+	// Divide performs division and maps to a RESTful POST endpoint.
+	Divide(ctx context.Context, in *DivideRequest, opts ...grpc.CallOption) (*CalculationResponse, error)
 }
 
 type calculatorServiceClient struct {
@@ -37,10 +43,20 @@ func NewCalculatorServiceClient(cc grpc.ClientConnInterface) CalculatorServiceCl
 	return &calculatorServiceClient{cc}
 }
 
-func (c *calculatorServiceClient) Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+func (c *calculatorServiceClient) Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*CalculationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AddResponse)
+	out := new(CalculationResponse)
 	err := c.cc.Invoke(ctx, CalculatorService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *calculatorServiceClient) Divide(ctx context.Context, in *DivideRequest, opts ...grpc.CallOption) (*CalculationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CalculationResponse)
+	err := c.cc.Invoke(ctx, CalculatorService_Divide_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +67,10 @@ func (c *calculatorServiceClient) Add(ctx context.Context, in *AddRequest, opts 
 // All implementations must embed UnimplementedCalculatorServiceServer
 // for forward compatibility.
 type CalculatorServiceServer interface {
-	Add(context.Context, *AddRequest) (*AddResponse, error)
+	// Add performs addition and maps to a RESTful POST endpoint.
+	Add(context.Context, *AddRequest) (*CalculationResponse, error)
+	// Divide performs division and maps to a RESTful POST endpoint.
+	Divide(context.Context, *DivideRequest) (*CalculationResponse, error)
 	mustEmbedUnimplementedCalculatorServiceServer()
 }
 
@@ -62,8 +81,11 @@ type CalculatorServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCalculatorServiceServer struct{}
 
-func (UnimplementedCalculatorServiceServer) Add(context.Context, *AddRequest) (*AddResponse, error) {
+func (UnimplementedCalculatorServiceServer) Add(context.Context, *AddRequest) (*CalculationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedCalculatorServiceServer) Divide(context.Context, *DivideRequest) (*CalculationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Divide not implemented")
 }
 func (UnimplementedCalculatorServiceServer) mustEmbedUnimplementedCalculatorServiceServer() {}
 func (UnimplementedCalculatorServiceServer) testEmbeddedByValue()                           {}
@@ -104,16 +126,38 @@ func _CalculatorService_Add_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CalculatorService_Divide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DivideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalculatorServiceServer).Divide(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CalculatorService_Divide_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalculatorServiceServer).Divide(ctx, req.(*DivideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CalculatorService_ServiceDesc is the grpc.ServiceDesc for CalculatorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CalculatorService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "calculator.CalculatorService",
+	ServiceName: "proto.CalculatorService",
 	HandlerType: (*CalculatorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Add",
 			Handler:    _CalculatorService_Add_Handler,
+		},
+		{
+			MethodName: "Divide",
+			Handler:    _CalculatorService_Divide_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

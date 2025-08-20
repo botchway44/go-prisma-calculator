@@ -6,7 +6,7 @@ import (
 	domain "go-prisma-calculator/internal/domain/models"
 	"go-prisma-calculator/internal/domain/ports/out"
 
-	// Only one import is needed, with the alias 'db'.
+	// Import the generated Prisma client with an alias 'db' for clarity.
 	db "go-prisma-calculator/internal/infrastructure/repository/prisma"
 )
 
@@ -15,15 +15,18 @@ type PrismaRepository struct {
 	client *db.PrismaClient
 }
 
-// NewPrismaRepository creates a new repository with a Prisma client.
+// NewPrismaRepository is the constructor that fx uses to create an instance.
+// It receives the Prisma client as a dependency.
 func NewPrismaRepository(client *db.PrismaClient) out.CalculationRepositoryPort {
 	return &PrismaRepository{
 		client: client,
 	}
 }
 
-// Save implements the port and saves a calculation to the database.
+// Save implements the port's contract. It translates the domain model
+// into a Prisma model and saves it to the database.
 func (r *PrismaRepository) Save(ctx context.Context, calc domain.Calculation) error {
+	// Use the Prisma client's fluent API to create a new record.
 	_, err := r.client.Calculation.CreateOne(
 		db.Calculation.Operation.Set(calc.Operation),
 		db.Calculation.A.Set(calc.A),
